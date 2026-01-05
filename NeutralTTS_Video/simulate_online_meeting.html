@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulated Online Meeting Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: #4fd1c5;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4fd1c5, #805ad5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .video-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 500px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-placeholder {
+            height: 500px;
+            background: linear-gradient(45deg, #2d3748, #4a5568);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .video-placeholder i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #4fd1c5;
+        }
+
+        .video-placeholder h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .video-placeholder p {
+            font-size: 18px;
+            max-width: 600px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .control-btn.end {
+            background: #e53e3e;
+        }
+
+        .control-btn.end:hover {
+            background: #c53030;
+        }
+
+        .notes-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notes-header h2 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notes-header i {
+            color: #4fd1c5;
+        }
+
+        .notes-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .note-input {
+            width: 100%;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            font-size: 16px;
+            resize: none;
+            margin-bottom: 15px;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: #4fd1c5;
+        }
+
+        .save-btn {
+            background: linear-gradient(45deg, #4fd1c5, #38b2ac);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .saved-notes {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .note-time {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .participants {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .participants h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .participant-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .participant {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .participant-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #805ad5, #d53f8c);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .participant-role {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .meeting-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .info-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #4fd1c5;
+        }
+
+        .info-card p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .meeting-title {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .meeting-title h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .meeting-title p {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .video-player, .video-placeholder {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .video-player, .video-placeholder {
+                height: 300px;
+            }
+            
+            .video-placeholder h2 {
+                font-size: 22px;
+            }
+            
+            .video-placeholder p {
+                font-size: 16px;
+            }
+            
+            .participant-list {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-video"></i>
+                <h1>MeetingSim Pro</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">T</div>
+                <div>
+                    <div>Taylor Reed</div>
+                    <div style="font-size: 14px; opacity: 0.7;">You (Observer)</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="meeting-title">
+            <h2>Quarterly Strategy Meeting</h2>
+            <p>Alex Morgan, Jamie Wilson, and Taylor Reed</p>
+        </div>
+
+        <div class="main-content">
+            <div class="video-container">
+                <div class="video-player">
+                    <video id="meetingVideo" controls poster="https://placehold.co/800x500/1a2a6c/white?text=Meeting+Video">
+                        <source src="Meeting_cn_blur_neutral.mp4" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" title="Microphone">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="control-btn" title="Camera">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="control-btn" title="Screen Share">
+                        <i class="fas fa-desktop"></i>
+                    </button>
+                    <button class="control-btn end" title="End Meeting">
+                        <i class="fas fa-phone-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="notes-section">
+                <div class="notes-header">
+                    <h2><i class="fas fa-sticky-note"></i> Meeting Notes</h2>
+                </div>
+                <div class="notes-content">
+                    <textarea class="note-input" placeholder="Take notes during the meeting..."></textarea>
+                    <button class="save-btn">Save Note</button>
+                    <div class="saved-notes">
+                        <div class="note-item">
+                            <div class="note-time">2:45 PM</div>
+                            <div>Meeting started with project overview and timeline discussion.</div>
+                        </div>
+                        <div class="note-item">
+                            <div class="note-time">3:12 PM</div>
+                            <div>Key decision: Move deadline to next Friday for better quality.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="participants">
+            <h2><i class="fas fa-users"></i> Meeting Participants</h2>
+            <div class="participant-list">
+                <div class="participant">
+                    <div class="participant-avatar">A</div>
+                    <div class="participant-name">Alex Morgan</div>
+                    <div class="participant-role">Project Lead</div>
+                </div>
+                <div class="participant">
+                    <div class="participant-avatar">J</div>
+                    <div class="participant-name">Jamie Wilson</div>
+                    <div class="participant-role">Product Manager</div>
+                </div>
+                <div class="participant">
+                    <div class="participant-avatar">T</div>
+                    <div class="participant-name">Taylor Reed</div>
+                    <div class="participant-role">You (Observer)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="meeting-info">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-clipboard-list"></i> Meeting Context</h3>
+                    <p><strong>Role:</strong> Observer<br>
+                    <strong>Topic:</strong> Q3 Strategy Planning<br>
+                    <strong>Duration:</strong> 45 minutes<br>
+                    <strong>Participants:</strong> Alex, Jamie, Taylor</p>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-tasks"></i> Study Instructions</h3>
+                    <p>Please observe the meeting between Alex, Jamie, and yourself (Taylor). Take notes on key decisions, action items, and discussion points.</p>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-exclamation-circle"></i> Important</h3>
+                    <p>Do not pause or rewind the meeting. Take notes in real-time as you would normally. Ensure you're in a quiet environment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const noteInput = document.querySelector('.note-input');
+            const saveBtn = document.querySelector('.save-btn');
+            const savedNotes = document.querySelector('.saved-notes');
+            const video = document.getElementById('meetingVideo');
+            
+            let autoSaveTimer;
+            noteInput.addEventListener('input', function() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(saveNote, 2000);
+            });
+            
+            saveBtn.addEventListener('click', saveNote);
+            
+            function saveNote() {
+                if (noteInput.value.trim() !== '') {
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'note-item';
+                    noteItem.innerHTML = `
+                        <div class="note-time">${timeString}</div>
+                        <div>${noteInput.value}</div>
+                    `;
+                    
+                    savedNotes.insertBefore(noteItem, savedNotes.firstChild);
+                    noteInput.value = '';
+                    savedNotes.scrollTop = 0;
+                }
+            }
+            
+            let seconds = 0;
+            setInterval(() => {
+                seconds++;
+                if (seconds === 180) {
+                    noteInput.placeholder = "Don't forget to capture key decisions...";
+                }
+            }, 1000);
+            
+            video.addEventListener('error', function() {
+                const videoPlayer = document.querySelector('.video-player');
+                videoPlayer.innerHTML = `
+                    <div class="video-placeholder">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h2>Video Not Available</h2>
+                        <p>The meeting video (meeting.mp4) could not be loaded. Please ensure the file is in the correct directory.</p>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
